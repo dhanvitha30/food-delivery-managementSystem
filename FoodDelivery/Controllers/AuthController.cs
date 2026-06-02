@@ -2,6 +2,7 @@
 using FoodDelivery.Data;
 using FoodDelivery.Models;
 using FoodDelivery.DTOs;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FoodDelivery.Controllers
 {
@@ -59,5 +60,52 @@ namespace FoodDelivery.Controllers
 			_context.SaveChanges();
 			return Ok("user deleted");
         }
-    }
+		[HttpPost("login")]
+		public IActionResult Login(LoginDTO dto)
+		{
+			var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email && u.Password == dto.Password);
+			if (user == null)
+			{
+				return Unauthorized("Invalid email or password");
+			}
+			return Ok(new
+			{
+				message = "Login Successful",
+				user.Name,
+				user.Email,
+				user.Role
+
+			});
+		}
+			[HttpGet("users")]
+			public IActionResult GetAllUsers()
+            {
+                var users = _context.Users.ToList();
+                return Ok(users);
+            }
+			[HttpGet("users/{id}")]
+			public IActionResult GetUserById(int id)
+
+            {
+                var user = _context.Users.Find(id);
+                if (user == null)
+                {
+                    return NotFound("user not found");
+                }
+                return Ok(user);
+            }
+			[HttpDelete("users/{id}")]
+			public IActionResult DeleteUserById(int id)
+
+            {
+                var user = _context.Users.Find(id);
+                if (user == null)
+                {
+                    return NotFound("user not found");
+                }
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+                return Ok("user deleted Successfully");
+            }
+        }
 }

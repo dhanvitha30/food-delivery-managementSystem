@@ -5,8 +5,8 @@ using FoodDelivery.DTOs;
 using FoodDelivery.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using System.ComponentModel;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace FoodDelivery.Test.Controllers
 {
@@ -27,8 +27,8 @@ namespace FoodDelivery.Test.Controllers
             var controller = new AuthController(Context);
             var registerDto = new RegisterDto
             {
-                Nmae = "Dhanvitha",
-                Email = "dhanvitha@gmail.com"
+                Name = "Dhanvitha",
+                Email = "dhanvitha@gmail.com",
                 Password = "Dhanvitha@123",
                 Role = "Customer"
             };
@@ -43,7 +43,7 @@ namespace FoodDelivery.Test.Controllers
             Context.Users.Add(new User
             {
                 Name = "Ravi",
-                Email = "ravi@gamil.com"
+                Email = "ravi@gamil.com",
                 Password = "Ravi@123",
                 Role = "Customer"
             });
@@ -60,16 +60,16 @@ namespace FoodDelivery.Test.Controllers
             var user = new User
             {
                 Name = "Raju",
-                Email = "Raju@gamail.com"
+                Email = "Raju@gamail.com",
                 Password = "Raju@123",
                 Role = "Customer"
             };
-            context.Users.Add(user);
+            Context.Users.Add(user);
             Context.SaveChanges();
             var controller = new AuthController(Context);
             var dto = new RegisterDto
             {
-                Nmae = "Raju Kumar",
+                Name = "Raju Kumar",
                 Email = "rajukumar@gamil.com",
                 Password = "rajuk123",
                 Role = "Admin"
@@ -85,7 +85,7 @@ namespace FoodDelivery.Test.Controllers
             var user = new User
             {
                 Name = "Raju",
-                Email = "raju@gmail.com"
+                Email = "raju@gmail.com",
                 Password = "Raju@123",
                 Role = "Customer"
             };
@@ -94,6 +94,64 @@ namespace FoodDelivery.Test.Controllers
             var controller = new AuthController(Context);
             var result = controller.DeleteUser(user.Id);
             Assert.IsType<OkObjectResult>(result);
+        }
+        [Fact]
+        public void Login_ReturnsOkResult_WhenCredentialsAreValid()
+        {
+            // Arrange
+            var Context = GetDbContext();
+            Context.Users.Add(new User
+            {
+                Name = "Raju",
+                Email = "raju@gmail.com",
+                Password = "Raju@123",
+                Role = "Customer"
+            });
+            Context.SaveChanges();
+            var controller = new AuthController(Context);
+            var loginDto = new LoginDTO
+            {
+                Email = "raju@gmail.com",
+                Password = "Raju@123"
+            };
+            var result = controller.Login(loginDto);
+            Assert.IsType<OkObjectResult>(result);
+        }
+        [Fact]
+        public void Login_ReturnsUnauthorizedResult_WhenCredentialsAreInvalid()
+        {
+            // Arrange
+            var Context = GetDbContext();
+            Context.Users.Add(new User
+            {
+                Name = "Raju",
+                Email = "raju@gmail.com",
+                Password = "Raju@123",
+                Role = "Customer"
+            });
+            Context.SaveChanges();
+            var controller = new AuthController(Context);
+            var loginDto = new LoginDTO
+            {
+                Email = "raju@gamil.com",
+                Password = "WrongPassword"
+            };
+            var result = controller.Login(loginDto);
+            Assert.IsType<UnauthorizedObjectResult>(result);
+        }
+        [Fact]
+        public void Login_ReturnsUnauthorizedResult_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var Context = GetDbContext();
+            var controller = new AuthController(Context);
+            var loginDto = new LoginDTO
+            {
+                Email = "ravi@gamil.com",
+                Password = "Ravi@123"
+            };
+            var result = controller.Login(loginDto);
+            Assert.IsType<UnauthorizedObjectResult>(result);
         }
     }
 }
