@@ -31,35 +31,6 @@ namespace FoodDelivery.Controllers
 			_context.SaveChanges();
 			return Ok(new { message = "User registered successfully" });
 		}
-        [HttpGet]
-        public IActionResult GetUsers()
-        {
-            var users = _context.Users.ToList();
-            return Ok(users);
-        }
-		[HttpPut("{id}")]
-		public IActionResult UpdateUser(int id,	RegisterDto dto)
-		{
-			var user = _context.Users.Find(id);
-			if (user == null)
-				return NotFound();
-			user.Name = dto.Name;
-			user.Email = dto.Email;
-			user.Password = dto.Password;
-			user.Role = dto.Role;
-			_context.SaveChanges();
-			return Ok("user updated");
-        }
-		[HttpDelete("{id}")]
-		public IActionResult DeleteUser(int id)
-		{
-			var user = _context.Users.Find(id);
-			if (user == null)
-				return NotFound();
-			_context.Users.Remove(user);
-			_context.SaveChanges();
-			return Ok("user deleted");
-        }
 		[HttpPost("login")]
 		public IActionResult Login(LoginDTO dto)
 		{
@@ -77,35 +48,5 @@ namespace FoodDelivery.Controllers
 
 			});
 		}
-			[HttpGet("users")]
-			public IActionResult GetAllUsers()
-            {
-                var users = _context.Users.ToList();
-                return Ok(users);
-            }
-			[HttpGet("users/{id}")]
-			public IActionResult GetUserById(int id)
-
-            {
-                var user = _context.Users.Find(id);
-                if (user == null)
-                {
-                    return NotFound("user not found");
-                }
-                return Ok(user);
-            }
-			[HttpDelete("users/{id}")]
-			public IActionResult DeleteUserById(int id)
-
-            {
-                var user = _context.Users.Find(id);
-                if (user == null)
-                {
-                    return NotFound("user not found");
-                }
-                _context.Users.Remove(user);
-                _context.SaveChanges();
-                return Ok("user deleted Successfully");
-            }
         }
 }
