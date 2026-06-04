@@ -2,11 +2,13 @@
 using FoodDelivery.Data;
 using FoodDelivery.DTOs;
 using FoodDelivery.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FoodDelivery.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
