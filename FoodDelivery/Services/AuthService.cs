@@ -2,6 +2,7 @@
 using FoodDelivery.DTOs;
 using FoodDelivery.Models;
 using FoodDelivery.Interfaces;
+using FoodDelivery.Repositories.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -40,7 +41,7 @@ namespace FoodDelivery.Services
             {
                 Name = dto.Name,
                 Email = dto.Email,
-                Password = dto.Password,
+                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Role = dto.Role
             };
             Console.WriteLine($"Name: {dto.Name}");
@@ -64,6 +65,12 @@ namespace FoodDelivery.Services
                 return null;
 
             var user = _repository.Login(dto);
+
+            if (user == null)
+                return null;
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
+                return null;
 
             Console.WriteLine($"Email: {dto.Email}");
              Console.WriteLine($"Password: {dto.Password}");

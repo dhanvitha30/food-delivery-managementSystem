@@ -1,7 +1,7 @@
 using FoodDelivery.Data;
 using FoodDelivery.DTOs;
-using FoodDelivery.Interfaces;
 using FoodDelivery.Models;
+using FoodDelivery.Repositories.Interfaces;
 
 namespace FoodDelivery.Repositories
 {
@@ -22,9 +22,8 @@ namespace FoodDelivery.Repositories
 
         public User? Login(LoginDTO dto)
         {
-            return _context.Users.FirstOrDefault(u =>
-                u.Email == dto.Email &&
-                u.Password == dto.Password);
+            return _context.Users
+                .FirstOrDefault(u => u.Email == dto.Email);
         }
 
         public bool EmailExists(string email)

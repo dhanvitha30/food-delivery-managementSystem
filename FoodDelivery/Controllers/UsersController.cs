@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using FoodDelivery.Data;
-using FoodDelivery.DTOs;
-using FoodDelivery.Models;
+﻿using FoodDelivery.DTOs;
+using FoodDelivery.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FoodDelivery.Controllers
 {
@@ -11,29 +10,26 @@ namespace FoodDelivery.Controllers
     [Authorize]
     public class UsersController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         [HttpGet]
         public IActionResult GetUsers()
         {
-            var users = _context.Users.ToList();
-            return Ok(users);
+            return Ok(_userService.GetUsers());
         }
 
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
-            var user = _context.Users.Find(id);
+            var user = _userService.GetUserById(id);
 
             if (user == null)
-            {
                 return NotFound("User not found");
-            }
 
             return Ok(user);
         }
@@ -41,38 +37,13 @@ namespace FoodDelivery.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateUser(int id, RegisterDto dto)
         {
-            var user = _context.Users.Find(id);
-
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-
-            user.Name = dto.Name;
-            user.Email = dto.Email;
-            user.Password = dto.Password;
-            user.Role = dto.Role;
-
-            _context.SaveChanges();
-
-            return Ok("User updated successfully");
+            return Ok(_userService.UpdateUser(id, dto));
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
-            var user = _context.Users.Find(id);
-
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-
-            _context.Users.Remove(user);
-            _context.SaveChanges();
-
-            return Ok("User deleted successfully");
+            return Ok(_userService.DeleteUser(id));
         }
     }
 }
-

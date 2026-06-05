@@ -1,7 +1,7 @@
 using FoodDelivery.DTOs;
 using FoodDelivery.Models;
 
-namespace FoodDelivery.Interfaces
+namespace FoodDelivery.Repositories.Interfaces
 {
     public interface IAuthRepository
     {
