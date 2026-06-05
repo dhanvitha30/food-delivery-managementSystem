@@ -21,8 +21,8 @@ namespace FoodDelivery.Data
                 entity.Property(e => e.Id).HasColumnName("Id");
                 entity.Property(e => e.Name).HasColumnName("name");
                 entity.Property(e => e.Email).HasColumnName("email");
-                entity.Property(e => e.Password).HasColumnName("Password");
-                entity.Property(e => e.Role).HasColumnName("Role");
+                entity.Property(e => e.Password).HasColumnName("password");
+                entity.Property(e => e.Role).HasColumnName("role");
             });
         }
     }

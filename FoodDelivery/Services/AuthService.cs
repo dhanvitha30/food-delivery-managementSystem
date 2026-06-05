@@ -11,14 +11,14 @@ namespace FoodDelivery.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IAuthRepository _repository;
         private readonly IConfiguration _configuration;
 
         public AuthService(
-            ApplicationDbContext context,
-            IConfiguration configuration)
+        IAuthRepository repository,
+        IConfiguration configuration)
         {
-            _context = context;
+            _repository = repository;
             _configuration = configuration;
         }
 
@@ -33,7 +33,7 @@ namespace FoodDelivery.Services
             if (string.IsNullOrWhiteSpace(dto.Password))
                 return "Password is required";
 
-            if (_context.Users.Any(u => u.Email == dto.Email))
+            if (_repository.EmailExists(dto.Email))
                 return "Email already exists";
 
             var user = new User
@@ -48,8 +48,9 @@ namespace FoodDelivery.Services
             Console.WriteLine($"Password: {dto.Password}");
             Console.WriteLine($"Role: {dto.Role}");
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _repository.Register(user);
+            Console.WriteLine(user.Password);
+            Console.WriteLine(user.Role);
 
             return "User registered successfully";
         }
@@ -62,12 +63,9 @@ namespace FoodDelivery.Services
             if (string.IsNullOrWhiteSpace(dto.Password))
                 return null;
 
-            var user = _context.Users
-                .FirstOrDefault(u =>
-                    u.Email == dto.Email &&
-                    u.Password == dto.Password);
+            var user = _repository.Login(dto);
 
-             Console.WriteLine($"Email: {dto.Email}");
+            Console.WriteLine($"Email: {dto.Email}");
              Console.WriteLine($"Password: {dto.Password}");
              Console.WriteLine(user == null ? "User Not Found" : "User Found"); 
 
