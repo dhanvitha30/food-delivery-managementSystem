@@ -76,8 +76,6 @@ namespace FoodDelivery.Services
              Console.WriteLine($"Password: {dto.Password}");
              Console.WriteLine(user == null ? "User Not Found" : "User Found"); 
 
-            if (user == null)
-                return null;
 
             var claims = new[]
                 {
