@@ -2,6 +2,8 @@ using FoodDelivery.Data;
 using FoodDelivery.DTOs;
 using FoodDelivery.Models;
 using FoodDelivery.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace FoodDelivery.Repositories
 {
