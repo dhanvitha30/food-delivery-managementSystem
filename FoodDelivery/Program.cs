@@ -27,9 +27,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+Console.WriteLine("CONNECTION STRING:");
+Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
-        "Host=localhost;Port=5431;Database=fooddelivery;Username=postgres;Password=postgres"));
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();

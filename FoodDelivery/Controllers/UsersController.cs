@@ -17,6 +17,23 @@ namespace FoodDelivery.Controllers
             _userService = userService;
         }
 
+        // Admin 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin")]
+        public IActionResult AdminOnly()
+        {
+            return Ok("Admin Access Granted");
+        }
+
+        // Customer 
+        [Authorize(Roles = "Customer")]
+        [HttpGet("customer")]
+        public IActionResult CustomerOnly()
+        {
+            return Ok("Customer Access Granted");
+        }
+
+        // user
         [HttpGet]
         public IActionResult GetUsers()
         {
