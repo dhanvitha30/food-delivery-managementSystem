@@ -1,63 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using FoodDelivery.Data;
-using FoodDelivery.Models;
 using FoodDelivery.DTOs;
+using FoodDelivery.Interfaces;
 
 namespace FoodDelivery.Controllers
 {
-	[ApiController]
-	[Route("api/[controller]")]
+    [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
-	{
-		private readonly ApplicationDbContext _context;
+    {
+        private readonly IAuthService _authService;
 
-		public AuthController(ApplicationDbContext context)
-		{
-			_context = context;
-		}
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
 
         [HttpPost("register")]
-		public IActionResult Register(RegisterDto dto)
-		{
-			var user = new User
-			{
-				Name = dto.Name,
-				Email = dto.Email,
-				Password = dto.Password,
-				Role = dto.Role,
-			};
-			_context.Users.Add(user);
-			_context.SaveChanges();
-			return Ok(new { message = "User registered successfully" });
-		}
-        [HttpGet]
-        public IActionResult GetUsers()
+        public IActionResult Register(RegisterDto dto)
         {
-            var users = _context.Users.ToList();
-            return Ok(users);
+            var result = _authService.Register(dto);
+
+            return Ok(new
+            {
+                message = result
+            });
         }
-		[HttpPut("{id}")]
-		public IActionResult UpdateUser(int id,	RegisterDto dto)
-		{
-			var user = _context.Users.Find(id);
-			if (user == null)
-				return NotFound();
-			user.Name = dto.Name;
-			user.Email = dto.Email;
-			user.Password = dto.Password;
-			user.Role = dto.Role;
-			_context.SaveChanges();
-			return Ok("user updated");
-        }
-		[HttpDelete("{id}")]
-		public IActionResult DeleteUser(int id)
-		{
-			var user = _context.Users.Find(id);
-			if (user == null)
-				return NotFound();
-			_context.Users.Remove(users);
-			_context.SaveChanges();
-			return Ok("user deleted");
+
+        [HttpPost("login")]
+        public IActionResult Login(LoginDTO dto)
+        {
+            var token = _authService.Login(dto);
+
+            if (token == null)
+            {
+                return Unauthorized("Invalid email or password");
+            }
+
+            return Ok(new
+            {
+                token,
+                message = "Login Successful"
+            });
         }
     }
 }

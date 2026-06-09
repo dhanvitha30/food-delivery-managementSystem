@@ -1,99 +1,102 @@
 ﻿using Xunit;
 using FoodDelivery.Controllers;
-using FoodDelivery.Data;
 using FoodDelivery.DTOs;
-using FoodDelivery.Models;
+using FoodDelivery.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using System.ComponentModel;
+using Moq;
 
 namespace FoodDelivery.Test.Controllers
 {
     public class AuthControllerTests
     {
-        private ApplicationDbContext GetDbContext()
-        {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
-                .Options;
-            return new ApplicationDbContext(options);
-        }
         [Fact]
-        public void Register_ReturnsOkResult_WhenUserIsVaild()
+        public void Register_ReturnsOkResult_WhenUserIsValid()
         {
-            // Arrange
-            var Context = GetDbContext();
-            var controller = new AuthController(Context);
+            var mockService = new Mock<IAuthService>();
+
+            mockService
+                .Setup(x => x.Register(It.IsAny<RegisterDto>()))
+                .Returns("User registered successfully");
+
+            var controller = new AuthController(mockService.Object);
+
             var registerDto = new RegisterDto
             {
-                Nmae = "Dhanvitha",
-                Email = "dhanvitha@gmail.com"
+                Name = "Dhanvitha",
+                Email = "dhanvitha@gmail.com",
                 Password = "Dhanvitha@123",
                 Role = "Customer"
             };
+
             var result = controller.Register(registerDto);
+
             Assert.IsType<OkObjectResult>(result);
         }
+
         [Fact]
-        public void GetUsers_ReturnsOkResult()
+        public void Login_ReturnsOkResult_WhenCredentialsAreValid()
         {
-            // Arrange
-            var Context = GetDbContext();
-            Context.Users.Add(new User
+            var mockService = new Mock<IAuthService>();
+
+            mockService
+                .Setup(x => x.Login(It.IsAny<LoginDTO>()))
+                .Returns("dummy-token");
+
+            var controller = new AuthController(mockService.Object);
+
+            var loginDto = new LoginDTO
             {
-                Name = "Ravi",
-                Email = "ravi@gamil.com"
-                Password = "Ravi@123",
-                Role = "Customer"
-            });
-            Context.SaveChanges();
-            var controller = new AuthController(Context);
-            var result = controller.GetUsers();
+                Email = "raju@gmail.com",
+                Password = "Raju@123"
+            };
+
+            var result = controller.Login(loginDto);
+
             Assert.IsType<OkObjectResult>(result);
         }
+
         [Fact]
-        public void UpdateUser_ReturnsOkResult_WhenUserExists()
+        public void Login_ReturnsUnauthorizedResult_WhenCredentialsAreInvalid()
         {
-            // Arrange
-            var Context = GetDbContext();
-            var user = new User
+            var mockService = new Mock<IAuthService>();
+
+            mockService
+                .Setup(x => x.Login(It.IsAny<LoginDTO>()))
+                .Returns((string)null);
+
+            var controller = new AuthController(mockService.Object);
+
+            var loginDto = new LoginDTO
             {
-                Name = "Raju",
-                Email = "Raju@gamail.com"
-                Password = "Raju@123",
-                Role = "Customer"
+                Email = "raju@gmail.com",
+                Password = "WrongPassword"
             };
-            context.Users.Add(user);
-            Context.SaveChanges();
-            var controller = new AuthController(Context);
-            var dto = new RegisterDto
-            {
-                Nmae = "Raju Kumar",
-                Email = "rajukumar@gamil.com",
-                Password = "rajuk123",
-                Role = "Admin"
-            };
-            var result = controller.UpdateUser(user.Id, dto);
-            Assert.IsType<OkObjectResult>(result);
+
+            var result = controller.Login(loginDto);
+
+            Assert.IsType<UnauthorizedObjectResult>(result);
         }
+
         [Fact]
-        public void DeleteUser_ReturnsOkResult_WhenUserExists()
+        public void Login_ReturnsUnauthorizedResult_WhenUserDoesNotExist()
         {
-            // Arrange
-            var Context = GetDbContext();
-            var user = new User
+            var mockService = new Mock<IAuthService>();
+
+            mockService
+                .Setup(x => x.Login(It.IsAny<LoginDTO>()))
+                .Returns((string)null);
+
+            var controller = new AuthController(mockService.Object);
+
+            var loginDto = new LoginDTO
             {
-                Name = "Raju",
-                Email = "raju@gmail.com"
-                Password = "Raju@123",
-                Role = "Customer"
+                Email = "ravi@gmail.com",
+                Password = "Ravi@123"
             };
-            Context.Users.Add(user);
-            Context.SaveChanges();
-            var controller = new AuthController(Context);
-            var result = controller.DeleteUser(user.Id);
-            Assert.IsType<OkObjectResult>(result);
+
+            var result = controller.Login(loginDto);
+
+            Assert.IsType<UnauthorizedObjectResult>(result);
         }
     }
 }
