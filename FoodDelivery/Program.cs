@@ -27,8 +27,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-Console.WriteLine("CONNECTION STRING:");
-Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
