@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FoodDelivery.DTOs;
 using FoodDelivery.Interfaces;
+using Npgsql;
 
 namespace FoodDelivery.Controllers
 {
@@ -41,6 +42,25 @@ namespace FoodDelivery.Controllers
                 token,
                 message = "Login Successful"
             });
+        }
+
+        [HttpGet("testdb")]
+        public IActionResult TestDb()
+        {
+            try
+            {
+                var connString =
+                    "Host=localhost;Port=5432;Database=fooddelivery;Username=postgres;Password=postgres";
+
+                using var conn = new NpgsqlConnection(connString);
+                conn.Open();
+
+                return Ok("Database Connected Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
         }
     }
 }
