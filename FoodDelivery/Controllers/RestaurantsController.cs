@@ -21,28 +21,72 @@ namespace FoodDelivery.Controllers
         [HttpGet]
         public IActionResult GetAllRestaurants()
         {
-            return Ok(_service.GetAll());
+            try
+            {
+                return Ok(_service.GetAll());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
+            }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult CreateRestaurant(RestaurantDto dto)
         {
-            return Ok(_service.Create(dto));
+            try
+            {
+                return Ok(_service.Create(dto));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
+            }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult UpdateRestaurant(int id, RestaurantDto dto)
         {
-            return Ok(_service.Update(id, dto));
+            try
+            {
+                return Ok(_service.Update(id, dto));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
+            }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteRestaurant(int id)
         {
-            return Ok(_service.Delete(id));
+            try
+            {
+                return Ok(_service.Delete(id));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
+            }
         }
     }
 }
