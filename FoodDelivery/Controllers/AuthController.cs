@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FoodDelivery.DTOs;
 using FoodDelivery.Interfaces;
+using Npgsql;
 
 namespace FoodDelivery.Controllers
 {

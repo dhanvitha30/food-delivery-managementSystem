@@ -3,7 +3,11 @@ using FoodDelivery.DTOs;
 using FoodDelivery.Models;
 using FoodDelivery.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 using Microsoft.Extensions.Logging;
+
+using Microsoft.Extensions.Configuration;
+
 
 namespace FoodDelivery.Repositories
 {
