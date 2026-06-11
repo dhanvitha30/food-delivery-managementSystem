@@ -5,9 +5,12 @@ namespace FoodDelivery.Interfaces
 {
     public interface IUserService
     {
-        List<User> GetUsers();
-        User? GetUserById(int id);
-        string UpdateUser(int id, RegisterDto dto);
-        string DeleteUser(int id);
+        Task<List<User>> GetUsersAsync();
+
+        Task<User?> GetUserByIdAsync(int id);
+
+        Task<string> UpdateUserAsync(int id, RegisterDto dto);
+
+        Task<string> DeleteUserAsync(int id);
     }
 }

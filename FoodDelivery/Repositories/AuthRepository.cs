@@ -3,34 +3,84 @@ using FoodDelivery.DTOs;
 using FoodDelivery.Models;
 using FoodDelivery.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
+using Microsoft.Extensions.Logging;
+
 using Microsoft.Extensions.Configuration;
+
 
 namespace FoodDelivery.Repositories
 {
     public class AuthRepository : IAuthRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<AuthRepository> _logger;
 
-        public AuthRepository(ApplicationDbContext context)
+        public AuthRepository(
+            ApplicationDbContext context,
+            ILogger<AuthRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        public void Register(User user)
+        public async Task RegisterAsync(User user)
         {
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            try
+            {
+                _logger.LogInformation(
+                    "Registering user {Email}",
+                    user.Email);
+
+                await _context.Users.AddAsync(user);
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while registering user");
+
+                throw;
+            }
         }
 
-        public User? Login(LoginDTO dto)
+        public async Task<User?> LoginAsync(LoginDTO dto)
         {
-            return _context.Users
-                .FirstOrDefault(u => u.Email == dto.Email);
+            try
+            {
+                _logger.LogInformation(
+                    "Login attempt for {Email}",
+                    dto.Email);
+
+                return await _context.Users
+                    .FirstOrDefaultAsync(
+                        u => u.Email == dto.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while logging in");
+
+                throw;
+            }
         }
 
-        public bool EmailExists(string email)
+        public async Task<bool> EmailExistsAsync(
+            string email)
         {
-            return _context.Users.Any(u => u.Email == email);
+            try
+            {
+                return await _context.Users
+                    .AnyAsync(u => u.Email == email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while checking email");
+
+                throw;
+            }
         }
     }
 }

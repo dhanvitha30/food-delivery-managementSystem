@@ -5,8 +5,10 @@ namespace FoodDelivery.Repositories.Interfaces
 {
     public interface IAuthRepository
     {
-        void Register(User user);
-        User? Login(LoginDTO dto);
-        bool EmailExists(string email);
+        Task RegisterAsync(User user);
+
+        Task<User?> LoginAsync(LoginDTO dto);
+
+        Task<bool> EmailExistsAsync(string email);
     }
 }

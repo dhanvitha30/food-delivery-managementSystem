@@ -1,13 +1,15 @@
-using FoodDelivery.DTOs;
 using FoodDelivery.Models;
 
 namespace FoodDelivery.Interfaces
 {
     public interface IUserRepository
     {
-        List<User> GetUsers();
-        User? GetUserById(int id);
-        void UpdateUser(User user);
-        void DeleteUser(User user);
+        Task<List<User>> GetUsersAsync();
+
+        Task<User?> GetUserByIdAsync(int id);
+
+        Task UpdateUserAsync(User user);
+
+        Task DeleteUserAsync(User user);
     }
 }

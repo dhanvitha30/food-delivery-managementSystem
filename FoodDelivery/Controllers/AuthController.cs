@@ -10,38 +10,69 @@ namespace FoodDelivery.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService)
+        public AuthController(
+            IAuthService authService,
+            ILogger<AuthController> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterDto dto)
+        public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var result = _authService.Register(dto);
-
-            return Ok(new
+            try
             {
-                message = result
-            });
+                var result =
+                    await _authService.RegisterAsync(dto);
+
+                return Ok(new
+                {
+                    message = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while registering user");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginDTO dto)
+        public async Task<IActionResult> Login(LoginDTO dto)
         {
-            var token = _authService.Login(dto);
-
-            if (token == null)
+            try
             {
-                return Unauthorized("Invalid email or password");
+                var token =
+                    await _authService.LoginAsync(dto);
+
+                if (token == null)
+                {
+                    return Unauthorized(
+                        "Invalid email or password");
+                }
+
+                return Ok(new
+                {
+                    token,
+                    message = "Login Successful"
+                });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                token,
-                message = "Login Successful"
-            });
+                _logger.LogError(ex,
+                    "Error while logging in");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
     }
 }
