@@ -19,10 +19,13 @@ namespace FoodDelivery.Services
             _logger = logger;
         }
 
-        public string Create(RestaurantDto dto)
+        public async Task<string> CreateAsync(RestaurantDto dto)
         {
             try
             {
+                _logger.LogInformation(
+                    "Creating restaurant in service");
+
                 var restaurant = new Restaurant
                 {
                     Name = dto.Name,
@@ -30,7 +33,8 @@ namespace FoodDelivery.Services
                     Phone = dto.Phone
                 };
 
-                return _repository.Create(restaurant);
+                return await _repository.CreateAsync(
+                    restaurant);
             }
             catch (Exception ex)
             {
@@ -41,11 +45,14 @@ namespace FoodDelivery.Services
             }
         }
 
-        public List<Restaurant> GetAll()
+        public async Task<List<Restaurant>> GetAllAsync()
         {
             try
             {
-                return _repository.GetAll();
+                _logger.LogInformation(
+                    "Fetching restaurants in service");
+
+                return await _repository.GetAllAsync();
             }
             catch (Exception ex)
             {
@@ -56,10 +63,15 @@ namespace FoodDelivery.Services
             }
         }
 
-        public string Update(int id, RestaurantDto dto)
+        public async Task<string> UpdateAsync(
+            int id,
+            RestaurantDto dto)
         {
             try
             {
+                _logger.LogInformation(
+                    "Updating restaurant in service");
+
                 var restaurant = new Restaurant
                 {
                     Name = dto.Name,
@@ -67,7 +79,9 @@ namespace FoodDelivery.Services
                     Phone = dto.Phone
                 };
 
-                return _repository.Update(id, restaurant);
+                return await _repository.UpdateAsync(
+                    id,
+                    restaurant);
             }
             catch (Exception ex)
             {
@@ -78,11 +92,14 @@ namespace FoodDelivery.Services
             }
         }
 
-        public string Delete(int id)
+        public async Task<string> DeleteAsync(int id)
         {
             try
             {
-                return _repository.Delete(id);
+                _logger.LogInformation(
+                    "Deleting restaurant in service");
+
+                return await _repository.DeleteAsync(id);
             }
             catch (Exception ex)
             {

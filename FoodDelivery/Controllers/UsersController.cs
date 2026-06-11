@@ -11,39 +11,99 @@ namespace FoodDelivery.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService)
+        public UsersController(
+            IUserService userService,
+            ILogger<UsersController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet]
-        public IActionResult GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            return Ok(_userService.GetUsers());
+            try
+            {
+                return Ok(
+                    await _userService.GetUsersAsync());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error fetching users");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetUserById(int id)
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var user = _userService.GetUserById(id);
+            try
+            {
+                var user =
+                    await _userService.GetUserByIdAsync(id);
 
-            if (user == null)
-                return NotFound("User not found");
+                if (user == null)
+                    return NotFound("User not found");
 
-            return Ok(user);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error fetching user");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateUser(int id, RegisterDto dto)
+        public async Task<IActionResult> UpdateUser(
+            int id,
+            RegisterDto dto)
         {
-            return Ok(_userService.UpdateUser(id, dto));
+            try
+            {
+                return Ok(
+                    await _userService
+                        .UpdateUserAsync(id, dto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error updating user");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            return Ok(_userService.DeleteUser(id));
+            try
+            {
+                return Ok(
+                    await _userService
+                        .DeleteUserAsync(id));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error deleting user");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
     }
 }

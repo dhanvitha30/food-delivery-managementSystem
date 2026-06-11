@@ -11,81 +11,134 @@ namespace FoodDelivery.Controllers
     public class RestaurantsController : ControllerBase
     {
         private readonly IRestaurantService _service;
+        private readonly ILogger<RestaurantsController> _logger;
 
-        public RestaurantsController(IRestaurantService service)
+        public RestaurantsController(
+            IRestaurantService service,
+            ILogger<RestaurantsController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [Authorize(Roles = "Admin,Customer")]
         [HttpGet]
-        public IActionResult GetAllRestaurants()
+        public async Task<IActionResult> GetAllRestaurants()
         {
             try
             {
-                return Ok(_service.GetAll());
+                _logger.LogInformation("Fetching all restaurants");
+
+                var restaurants =
+                    await _service.GetAllAsync();
+
+                return Ok(restaurants);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,
+                    "Error while fetching restaurants");
+
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
-                    ex.Message);
+                    "Internal Server Error");
             }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult CreateRestaurant(RestaurantDto dto)
+        public async Task<IActionResult> CreateRestaurant(
+            RestaurantDto dto)
         {
             try
             {
-                return Ok(_service.Create(dto));
+                _logger.LogInformation(
+                    "Creating restaurant");
+
+                var result =
+                    await _service.CreateAsync(dto);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,
+                    "Error while creating restaurant");
+
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
-                    ex.Message);
+                    "Internal Server Error");
             }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public IActionResult UpdateRestaurant(int id, RestaurantDto dto)
+        public async Task<IActionResult> UpdateRestaurant(
+            int id,
+            RestaurantDto dto)
         {
             try
             {
-                return Ok(_service.Update(id, dto));
+                _logger.LogInformation(
+                    "Updating restaurant {Id}",
+                      id);
+
+                var result =
+                    await _service.UpdateAsync(id, dto);
+
+                return Ok(result);
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogWarning(ex,
+                    "Restaurant not found {Id}",
+                    id);
+
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,
+                    "Error while updating restaurant");
+
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
-                    ex.Message);
+                    "Internal Server Error");
             }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        public IActionResult DeleteRestaurant(int id)
+        public async Task<IActionResult> DeleteRestaurant(
+            int id)
         {
             try
             {
-                return Ok(_service.Delete(id));
+                _logger.LogInformation(
+                    "Deleting restaurant {Id}",
+                    id);
+
+                var result =
+                    await _service.DeleteAsync(id);
+
+                return Ok(result);
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogWarning(ex,
+                    "Restaurant not found {Id}",
+                    id);
+
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,
+                    "Error while deleting restaurant");
+
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
-                    ex.Message);
+                    "Internal Server Error");
             }
         }
     }

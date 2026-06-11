@@ -4,12 +4,12 @@ namespace FoodDelivery.Repositories.Interfaces
 {
     public interface IRestaurantRepository
     {
-        string Create(Restaurant restaurant);
+        Task<string> CreateAsync(Restaurant restaurant);
 
-        List<Restaurant> GetAll();
+        Task<List<Restaurant>> GetAllAsync();
 
-        string Update(int id, Restaurant restaurant);
+        Task<string> UpdateAsync(int id, Restaurant restaurant);
 
-        string Delete(int id);
+        Task<string> DeleteAsync(int id);
     }
 }

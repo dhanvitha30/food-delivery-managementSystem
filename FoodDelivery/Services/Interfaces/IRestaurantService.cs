@@ -5,12 +5,12 @@ namespace FoodDelivery.Services.Interfaces
 {
     public interface IRestaurantService
     {
-        string Create(RestaurantDto dto);
+        Task<string> CreateAsync(RestaurantDto dto);
 
-        List<Restaurant> GetAll();
+        Task<List<Restaurant>> GetAllAsync();
 
-        string Update(int id, RestaurantDto dto);
+        Task<string> UpdateAsync(int id, RestaurantDto dto);
 
-        string Delete(int id);
+        Task<string> DeleteAsync(int id);
     }
 }

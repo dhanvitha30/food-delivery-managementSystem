@@ -1,6 +1,7 @@
 ﻿using FoodDelivery.Data;
 using FoodDelivery.Models;
 using FoodDelivery.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.Repositories
@@ -18,45 +19,46 @@ namespace FoodDelivery.Repositories
             _logger = logger;
         }
 
-        public string Create(Restaurant restaurant)
+        public async Task<string> CreateAsync(Restaurant restaurant)
         {
             try
             {
-                _context.Restaurants.Add(restaurant);
-                _context.SaveChanges();
+                _logger.LogInformation("Creating restaurant");
+
+                await _context.Restaurants.AddAsync(restaurant);
+                await _context.SaveChangesAsync();
 
                 return "Restaurant created successfully";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
-                    "Error occurred while creating restaurant");
-
+                _logger.LogError(ex, "Error occurred while creating restaurant");
                 throw;
             }
         }
 
-        public List<Restaurant> GetAll()
+        public async Task<List<Restaurant>> GetAllAsync()
         {
             try
             {
-                return _context.Restaurants.ToList();
+                _logger.LogInformation("Fetching restaurants");
+
+                return await _context.Restaurants.ToListAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
-                    "Error occurred while fetching restaurants");
-
+                _logger.LogError(ex, "Error occurred while fetching restaurants");
                 throw;
             }
         }
 
-        public string Update(int id, Restaurant restaurant)
+        public async Task<string> UpdateAsync(int id, Restaurant restaurant)
         {
             try
             {
                 var existingRestaurant =
-                    _context.Restaurants.FirstOrDefault(r => r.Id == id);
+                    await _context.Restaurants
+                        .FirstOrDefaultAsync(r => r.Id == id);
 
                 if (existingRestaurant == null)
                     throw new KeyNotFoundException("Restaurant not found");
@@ -65,7 +67,7 @@ namespace FoodDelivery.Repositories
                 existingRestaurant.Address = restaurant.Address;
                 existingRestaurant.Phone = restaurant.Phone;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return "Restaurant updated successfully";
             }
@@ -79,19 +81,20 @@ namespace FoodDelivery.Repositories
             }
         }
 
-        public string Delete(int id)
+        public async Task<string> DeleteAsync(int id)
         {
             try
             {
                 var restaurant =
-                    _context.Restaurants.FirstOrDefault(r => r.Id == id);
+                    await _context.Restaurants
+                        .FirstOrDefaultAsync(r => r.Id == id);
 
                 if (restaurant == null)
                     throw new KeyNotFoundException("Restaurant not found");
 
                 _context.Restaurants.Remove(restaurant);
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return "Restaurant deleted successfully";
             }

@@ -4,7 +4,8 @@ namespace FoodDelivery.Interfaces
 {
     public interface IAuthService
     {
-        string Register(RegisterDto dto);
-        string Login(LoginDTO dto);
+        Task<string> RegisterAsync(RegisterDto dto);
+
+        Task<string?> LoginAsync(LoginDTO dto);
     }
 }

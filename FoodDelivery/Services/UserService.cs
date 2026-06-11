@@ -1,55 +1,104 @@
 using FoodDelivery.DTOs;
 using FoodDelivery.Interfaces;
 using FoodDelivery.Models;
+using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(IUserRepository repository)
+        public UserService(
+            IUserRepository repository,
+            ILogger<UserService> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
-        public List<User> GetUsers()
+        public async Task<List<User>> GetUsersAsync()
         {
-            return _repository.GetUsers();
+            try
+            {
+                return await _repository.GetUsersAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error fetching users");
+
+                throw;
+            }
         }
 
-        public User? GetUserById(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
-            return _repository.GetUserById(id);
+            try
+            {
+                return await _repository.GetUserByIdAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error fetching user");
+
+                throw;
+            }
         }
 
-        public string UpdateUser(int id, RegisterDto dto)
+        public async Task<string> UpdateUserAsync(
+            int id,
+            RegisterDto dto)
         {
-            var user = _repository.GetUserById(id);
+            try
+            {
+                var user =
+                    await _repository.GetUserByIdAsync(id);
 
-            if (user == null)
-                return "User not found";
+                if (user == null)
+                    return "User not found";
 
-            user.Name = dto.Name;
-            user.Email = dto.Email;
-            user.Password = dto.Password;
-            user.Role = dto.Role;
+                user.Name = dto.Name;
+                user.Email = dto.Email;
+                user.Password = dto.Password;
+                user.Role = dto.Role;
 
-            _repository.UpdateUser(user);
+                await _repository.UpdateUserAsync(user);
 
-            return "User updated successfully";
+                return "User updated successfully";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error updating user");
+
+                throw;
+            }
         }
 
-        public string DeleteUser(int id)
+        public async Task<string> DeleteUserAsync(int id)
         {
-            var user = _repository.GetUserById(id);
+            try
+            {
+                var user =
+                    await _repository.GetUserByIdAsync(id);
 
-            if (user == null)
-                return "User not found";
+                if (user == null)
+                    return "User not found";
 
-            _repository.DeleteUser(user);
+                await _repository.DeleteUserAsync(user);
 
-            return "User deleted successfully";
+                return "User deleted successfully";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error deleting user");
+
+                throw;
+            }
         }
     }
 }
