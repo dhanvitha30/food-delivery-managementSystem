@@ -25,10 +25,29 @@ namespace FoodDelivery.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMenuItems()
         {
-            var result =
-                await _service.GetAllAsync();
+            try
+            {
+                _logger.LogInformation("Fetching all menu items");
 
-            return Ok(result);
+                var result =
+                    await _service.GetAllAsync();
+
+                if (result == null || !result.Any())
+                {
+                    return NotFound("No menu items found");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while fetching menu items");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -36,10 +55,25 @@ namespace FoodDelivery.Controllers
         public async Task<IActionResult> CreateMenuItem(
             MenuItemDto dto)
         {
-            var result =
-                await _service.CreateAsync(dto);
+            try
+            {
+                _logger.LogInformation(
+                    "Creating menu item");
 
-            return Ok(result);
+                var result =
+                    await _service.CreateAsync(dto);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while creating menu item");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -48,10 +82,34 @@ namespace FoodDelivery.Controllers
             int id,
             MenuItemDto dto)
         {
-            var result =
-                await _service.UpdateAsync(id, dto);
+            try
+            {
+                _logger.LogInformation(
+                    "Updating menu item {Id}",
+                    id);
 
-            return Ok(result);
+                var result =
+                    await _service.UpdateAsync(id, dto);
+
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex,
+                    "Menu item not found {Id}",
+                    id);
+
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while updating menu item");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -59,10 +117,34 @@ namespace FoodDelivery.Controllers
         public async Task<IActionResult> DeleteMenuItem(
             int id)
         {
-            var result =
-                await _service.DeleteAsync(id);
+            try
+            {
+                _logger.LogInformation(
+                    "Deleting menu item {Id}",
+                    id);
 
-            return Ok(result);
+                var result =
+                    await _service.DeleteAsync(id);
+
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex,
+                    "Menu item not found {Id}",
+                    id);
+
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while deleting menu item");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
     }
 }
