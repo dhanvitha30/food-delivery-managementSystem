@@ -73,8 +73,12 @@ namespace FoodDelivery.Services
 
                 order.Status = "Cancelled";
 
-                await _repository
-                    .UpdateOrderAsync(order);
+                // Force UTC
+                order.OrderDate = DateTime.SpecifyKind(
+                    order.OrderDate,
+                    DateTimeKind.Utc);
+
+                await _repository.UpdateOrderAsync(order);
 
                 return "Order cancelled successfully";
             }

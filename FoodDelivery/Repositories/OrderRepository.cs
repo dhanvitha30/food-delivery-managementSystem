@@ -37,8 +37,7 @@ namespace FoodDelivery.Repositories
             }
         }
 
-        public async Task CreateOrderItemAsync(
-            OrderItem item)
+        public async Task CreateOrderItemAsync(OrderItem item)
         {
             try
             {
@@ -72,8 +71,7 @@ namespace FoodDelivery.Repositories
             }
         }
 
-        public async Task<Order?> GetOrderByIdAsync(
-            int id)
+        public async Task<Order?> GetOrderByIdAsync(int id)
         {
             try
             {
@@ -89,17 +87,21 @@ namespace FoodDelivery.Repositories
             }
         }
 
-        public async Task UpdateOrderAsync(
-            Order order)
+        public async Task UpdateOrderAsync(Order order)
         {
             try
             {
+                Console.WriteLine($"Order Id: {order.Id}");
+                Console.WriteLine($"Status: {order.Status}");
+
                 _context.Orders.Update(order);
 
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
+
                 _logger.LogError(ex,
                     "Error while updating order");
 

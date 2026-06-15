@@ -13,9 +13,9 @@ namespace FoodDelivery.Controllers
         private readonly IOrderService _service;
         private readonly ILogger<OrdersController> _logger;
 
-        public OrdersController(
-            IOrderService service,
-            ILogger<OrdersController> logger)
+    public OrdersController(
+        IOrderService service,
+        ILogger<OrdersController> logger)
         {
             _service = service;
             _logger = logger;
@@ -23,14 +23,16 @@ namespace FoodDelivery.Controllers
 
         [Authorize(Roles = "Customer")]
         [HttpPost]
-        public async Task<IActionResult>
-            PlaceOrder(OrderDto dto)
+        public async Task<IActionResult> PlaceOrder(
+            OrderDto dto)
         {
             try
             {
+                _logger.LogInformation(
+                    "Placing order");
+
                 var result =
-                    await _service
-                    .PlaceOrderAsync(dto);
+                    await _service.PlaceOrderAsync(dto);
 
                 return Ok(result);
             }
@@ -47,19 +49,26 @@ namespace FoodDelivery.Controllers
 
         [Authorize(Roles = "Customer")]
         [HttpPut("cancel/{id}")]
-        public async Task<IActionResult>
-            CancelOrder(int id)
+        public async Task<IActionResult> CancelOrder(
+            int id)
         {
             try
             {
+                _logger.LogInformation(
+                    "Cancelling order {Id}",
+                      id);
+
                 var result =
-                    await _service
-                    .CancelOrderAsync(id);
+                    await _service.CancelOrderAsync(id);
 
                 return Ok(result);
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogWarning(ex,
+                    "Order not found {Id}",
+                    id);
+
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
@@ -79,9 +88,16 @@ namespace FoodDelivery.Controllers
         {
             try
             {
+                _logger.LogInformation(
+                    "Fetching order history");
+
                 var orders =
-                    await _service
-                    .GetOrderHistoryAsync();
+                    await _service.GetOrderHistoryAsync();
+
+                if (orders == null || !orders.Any())
+                {
+                    return NotFound("No orders found");
+                }
 
                 return Ok(orders);
             }
@@ -100,8 +116,31 @@ namespace FoodDelivery.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAllOrders()
         {
-            var orders = await _service.GetOrderHistoryAsync();
-            return Ok(orders);
+            try
+            {
+                _logger.LogInformation(
+                    "Fetching all orders");
+
+                var orders =
+                    await _service.GetOrderHistoryAsync();
+
+                if (orders == null || !orders.Any())
+                {
+                    return NotFound("No orders found");
+                }
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while fetching all orders");
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Internal Server Error");
+            }
         }
     }
+
 }
