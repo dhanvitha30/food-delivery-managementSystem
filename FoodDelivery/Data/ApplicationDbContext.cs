@@ -14,6 +14,9 @@ namespace FoodDelivery.Data
         public DbSet<User> Users { get; set; }
 
         public DbSet<Restaurant> Restaurants { get; set; }
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         public DbSet<MenuItem> MenuItems { get; set; }
 
@@ -47,6 +50,27 @@ namespace FoodDelivery.Data
 
                 entity.Property(e => e.Phone).HasColumnName("phone");
             });
+
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.ToTable("orders");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.OrderDate).HasColumnName("order_date");
+                entity.Property(e => e.Status).HasColumnName("status");
+            });
+
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.ToTable("orderitems");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.OrderId).HasColumnName("order_id");
+                entity.Property(e => e.MenuItemId).HasColumnName("menuitem_id");
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+            });
+
 
             modelBuilder.Entity<MenuItem>(entity =>
             {
