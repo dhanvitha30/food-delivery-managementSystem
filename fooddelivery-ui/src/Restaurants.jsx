@@ -1,17 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Restaurants() {
-  const restaurants = [
-    { name: "Paradise Biryani", location: "Hyderabad" },
-    { name: "KFC", location: "Madhapur" },
-    { name: "Domino's Pizza", location: "Hitech City" },
-    { name: "Burger King", location: "Gachibowli" },
-    { name: "Mehfil", location: "Kukatpally" },
-    { name: "Pizza Hut", location: "Miyapur" }
-  ];
+  const navigate = useNavigate();
 
+  const [restaurants, setRestaurants] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    axios
+      .get("https://jsonplaceholder.typicode.com/users")
+      .then((response) => {
+        const data = response.data.map((user) => ({
+          id: user.id,
+          name: user.name,
+          location: user.address.city,
+        }));
+
+        setRestaurants(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const restaurantsPerPage = 3;
 
@@ -22,8 +35,10 @@ function Restaurants() {
   const lastIndex = currentPage * restaurantsPerPage;
   const firstIndex = lastIndex - restaurantsPerPage;
 
-  const currentRestaurants =
-    filteredRestaurants.slice(firstIndex, lastIndex);
+  const currentRestaurants = filteredRestaurants.slice(
+    firstIndex,
+    lastIndex
+  );
 
   const totalPages = Math.ceil(
     filteredRestaurants.length / restaurantsPerPage
@@ -32,6 +47,16 @@ function Restaurants() {
   return (
     <div className="container">
       <h1>Restaurants</h1>
+
+      <button
+        className="btn"
+        onClick={() => navigate("/dashboard")}
+      >
+        Dashboard
+      </button>
+
+      <br />
+      <br />
 
       <input
         type="text"
@@ -45,8 +70,15 @@ function Restaurants() {
       />
 
       <div className="restaurant-grid">
-        {currentRestaurants.map((restaurant, index) => (
-          <div className="restaurant-card" key={index}>
+        {currentRestaurants.map((restaurant) => (
+          <div
+            key={restaurant.id}
+            className="restaurant-card"
+            onClick={() =>
+              navigate(`/restaurants/${restaurant.id}`)
+            }
+            style={{ cursor: "pointer" }}
+          >
             <h3>{restaurant.name}</h3>
             <p>{restaurant.location}</p>
           </div>
@@ -57,17 +89,23 @@ function Restaurants() {
         <button
           className="btn"
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
+          onClick={() =>
+            setCurrentPage(currentPage - 1)
+          }
         >
           Previous
         </button>
 
-        <span> Page {currentPage} of {totalPages} </span>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
 
         <button
           className="btn"
           disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}
+          onClick={() =>
+            setCurrentPage(currentPage + 1)
+          }
         >
           Next
         </button>
