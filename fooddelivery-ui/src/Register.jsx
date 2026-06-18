@@ -1,19 +1,44 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./App.css";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("Customer");
 
-  const handleRegister = () => {
-    if (!name || !email || !password) {
+  const handleRegister = async () => {
+    if (!name || !email || !password || !role) {
       alert("All fields are required");
       return;
     }
 
-    alert("Registration Successful");
+    try {
+      const response = await axios.post(
+        "http://localhost:5134/api/Auth/register",
+        {
+          name,
+          email,
+          password,
+          role
+        }
+      );
+
+      alert(response.data.message);
+
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+
+      alert(
+        error.response?.data ||
+        "Registration failed"
+      );
+    }
   };
 
   return (
@@ -28,8 +53,7 @@ function Register() {
         onChange={(e) => setName(e.target.value)}
       />
 
-      <br />
-      <br />
+      <br /><br />
 
       <input
         type="email"
@@ -39,8 +63,7 @@ function Register() {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <br />
-      <br />
+      <br /><br />
 
       <input
         type="password"
@@ -50,8 +73,18 @@ function Register() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <br />
-      <br />
+      <br /><br />
+
+      <select
+        className="input"
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+      >
+        <option value="Customer">Customer</option>
+        <option value="Admin">Admin</option>
+      </select>
+
+      <br /><br />
 
       <button
         className="btn"
@@ -62,7 +95,7 @@ function Register() {
 
       <p>
         Already have an account?
-        <Link to="/"> Login</Link>
+        <Link to="/login"> Login</Link>
       </p>
     </div>
   );
