@@ -1,19 +1,32 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "./App.css";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      alert("Please fill all fields");
-      return;
-    }
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5134/api/Auth/login",
+        {
+          email,
+          password
+        }
+      );
 
-    localStorage.setItem("token", "sampletoken");
-    window.location.href = "/restaurants";
+      localStorage.setItem(
+        "token",
+        response.data.token
+      );
+
+      window.location.href = "/restaurants";
+    }
+    catch (error) {
+      alert("Invalid email or password");
+    }
   };
 
   return (
