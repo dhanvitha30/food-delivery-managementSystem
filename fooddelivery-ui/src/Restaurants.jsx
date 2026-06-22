@@ -10,38 +10,89 @@ function Restaurants() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => {
-        const data = response.data.map((user) => ({
-          id: user.id,
-          name: user.name,
-          location: user.address.city,
-        }));
-
-        setRestaurants(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    fetchRestaurants();
   }, []);
+
+  const fetchRestaurants = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    
+
+    console.log("TOKEN:", token);
+
+    const response = await axios.get(
+      "http://localhost:5134/api/Restaurants",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("FULL RESPONSE");
+    console.log(response.data);
+
+    setRestaurants(response.data);
+  } catch (error) {
+    console.log("ERROR:", error);
+
+    if (error.response) {
+      console.log("STATUS:", error.response.status);
+      console.log("DATA:", error.response.data);
+    }
+
+    alert("Failed to load restaurants");
+  }
+};
+
+  const deleteRestaurant = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log ("token");
+
+      await axios.delete(
+        `http://localhost:5134/api/Restaurants/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Restaurant Deleted Successfully");
+
+      setRestaurants(
+        restaurants.filter(
+          (restaurant) => restaurant.id !== id
+        )
+      );
+    } catch (error) {
+      console.log(error);
+      alert("Delete Failed");
+    }
+  };
 
   const restaurantsPerPage = 3;
 
-  const filteredRestaurants = restaurants.filter((restaurant) =>
-    restaurant.name.toLowerCase().includes(search.toLowerCase())
+  const filteredRestaurants = restaurants.filter(
+    (restaurant) =>
+      restaurant.name
+        .toLowerCase()
+        .includes(search.toLowerCase())
   );
 
   const lastIndex = currentPage * restaurantsPerPage;
   const firstIndex = lastIndex - restaurantsPerPage;
 
-  const currentRestaurants = filteredRestaurants.slice(
-    firstIndex,
-    lastIndex
-  );
+  const currentRestaurants =
+    filteredRestaurants.slice(
+      firstIndex,
+      lastIndex
+    );
 
   const totalPages = Math.ceil(
-    filteredRestaurants.length / restaurantsPerPage
+    filteredRestaurants.length /
+      restaurantsPerPage
   );
 
   return (
@@ -74,13 +125,24 @@ function Restaurants() {
           <div
             key={restaurant.id}
             className="restaurant-card"
-            onClick={() =>
-              navigate(`/restaurants/${restaurant.id}`)
-            }
             style={{ cursor: "pointer" }}
+            onClick={() =>
+              navigate(
+                `/restaurant-details/${restaurant.id}`
+              )
+            }
           >
             <h3>{restaurant.name}</h3>
-            <p>{restaurant.location}</p>
+
+            <p>
+              <strong>Address:</strong>{" "}
+              {restaurant.address}
+            </p>
+
+            <p>
+              <strong>Phone:</strong>{" "}
+              {restaurant.phone}
+            </p>
           </div>
         ))}
       </div>
@@ -102,12 +164,29 @@ function Restaurants() {
 
         <button
           className="btn"
-          disabled={currentPage === totalPages}
+          disabled={
+            currentPage === totalPages
+          }
           onClick={() =>
             setCurrentPage(currentPage + 1)
           }
         >
           Next
+        </button>
+        <button
+          className="btn"
+          onClick={() => navigate("/cart")}
+        >
+          View Cart
+        </button>
+
+        &nbsp;
+
+        <button
+          className="btn"
+          onClick={() => navigate("/orders")}
+        >
+          Previous Orders
         </button>
       </div>
     </div>
