@@ -1,58 +1,85 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 function RestaurantDetails() {
   const { id } = useParams();
-  const navigate = useNavigate();
 
-  const menu = [
-    {
-      id: 1,
-      name: "Chicken Biryani",
-      price: 250
-    },
-    {
-      id: 2,
-      name: "Burger",
-      price: 180
-    },
-    {
-      id: 3,
-      name: "Pizza",
-      price: 300
+  const [menuItems, setMenuItems] = useState([]);
+
+  useEffect(() => {
+    loadMenuItems();
+  }, []);
+
+  const loadMenuItems = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get(
+        "http://localhost:5134/api/MenuItems",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const filteredItems =
+        response.data.filter(
+          item => item.restaurantId === Number(id)
+        );
+
+      setMenuItems(filteredItems);
+
+      console.log(filteredItems);
     }
-  ];
+    catch(error) {
+      console.log(error);
+    }
+  };
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      gap: "10px",
+      marginBottom: "20px"
+    }}
+  >
+    <button
+      className="btn"
+      onClick={() => navigate("/cart")}
+    >
+      View Cart
+    </button>
+
+    <button
+      className="btn"
+      onClick={() => navigate("/orders")}
+    >
+      Previous Orders
+    </button>
+  </div>
 
   return (
     <div className="container">
-      <h1>Restaurant Details</h1>
+      <h1>Menu Items</h1>
 
-      <h2>Restaurant ID: {id}</h2>
-
-      <button
-        className="btn"
-        onClick={() => navigate("/cart")}
-      >
-        View Cart
-      </button>
-
-      <br />
-      <br />
-
-      <h3>Menu</h3>
-
-      {menu.map((item) => (
+      {menuItems.map((item) => (
         <div
           key={item.id}
           className="restaurant-card"
         >
-          <h4>{item.name}</h4>
-          <p>₹{item.price}</p>
+          <h3>{item.itemName}</h3>
+
+          <p>Price: ₹{item.price}</p>
 
           <button
             className="btn"
             onClick={() => {
-              const cart =
-                JSON.parse(localStorage.getItem("cart")) || [];
+              let cart =
+                JSON.parse(
+                  localStorage.getItem("cart")
+                ) || [];
 
               cart.push(item);
 
@@ -61,7 +88,7 @@ function RestaurantDetails() {
                 JSON.stringify(cart)
               );
 
-              alert("Item Added To Cart");
+              alert("Added To Cart");
             }}
           >
             Add To Cart

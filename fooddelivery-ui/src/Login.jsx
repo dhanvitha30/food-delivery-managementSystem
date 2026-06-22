@@ -1,19 +1,48 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./App.css";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      alert("Please fill all fields");
-      return;
-    }
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5134/api/Auth/login",
+        {
+          email,
+          password,
+        }
+      );
+      console.log("token");
+      localStorage.setItem(
+        "token",
+        response.data.token
+      );
+      localStorage.setItem(
+        "userId",
+        response.data.userId
+      );
 
-    localStorage.setItem("token", "sampletoken");
-    window.location.href = "/restaurants";
+      localStorage.setItem(
+        "role",
+        response.data.role
+      );
+      console.log(response.data);
+
+      if (response.data.role === "Admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/customer-dashboard");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Invalid Email or Password");
+    }
   };
 
   return (

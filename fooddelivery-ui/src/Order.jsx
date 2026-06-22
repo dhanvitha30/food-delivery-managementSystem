@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Order() {
   const navigate = useNavigate();
@@ -11,12 +12,47 @@ function Order() {
     0
   );
 
-  const placeOrder = () => {
-    alert("Order Placed Successfully");
+  const placeOrder = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
 
-    localStorage.removeItem("cart");
+      console.log("UserId:", userId);
+      console.log("Cart:", cart);
 
-    navigate("/restaurants");
+      for (const item of cart) {
+        const orderData = {
+          userId: Number(userId),
+          menuItemId: item.id,
+          quantity: 1
+        };
+
+        console.log("Sending:", orderData);
+
+        await axios.post(
+          "http://localhost:5134/api/Orders",
+          orderData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+      }
+
+      alert("Order Placed Successfully");
+      localStorage.removeItem("cart");
+      navigate("/orders");
+    } catch (error) {
+      console.log(error);
+
+      if (error.response) {
+        console.log("Backend Error:");
+        console.log(error.response.data);
+      }
+
+      alert("Failed To Place Order");
+    }
   };
 
   return (
