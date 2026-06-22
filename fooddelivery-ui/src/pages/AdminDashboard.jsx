@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 
 function AdminDashboard() {
@@ -5,9 +6,15 @@ function AdminDashboard() {
 
   return (
     <div className="container">
+
+function AdminDashboard() {
+  return (
+    <div>
+
       <h1>Admin Dashboard</h1>
 
       <h2>Restaurant Management</h2>
+
 
       <button
         className="btn"
@@ -44,6 +51,11 @@ function AdminDashboard() {
       >
         View / Update / Delete Menu Items
       </button>
+
+      <button>Add Restaurant</button>
+      <button>Update Restaurant</button>
+      <button>Delete Restaurant</button>
+
     </div>
   );
 }

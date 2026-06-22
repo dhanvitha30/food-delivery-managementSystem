@@ -1,5 +1,9 @@
 import { useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
+
+import { Link } from "react-router-dom";
+
 import axios from "axios";
 import "./App.css";
 
@@ -15,14 +19,22 @@ function Login() {
         "http://localhost:5134/api/Auth/login",
         {
           email,
+
           password,
         }
       );
       console.log("token");
+
+          password
+        }
+      );
+
+
       localStorage.setItem(
         "token",
         response.data.token
       );
+
       localStorage.setItem(
         "userId",
         response.data.userId
@@ -42,6 +54,13 @@ function Login() {
     } catch (error) {
       console.log(error);
       alert("Invalid Email or Password");
+
+
+      window.location.href = "/restaurants";
+    }
+    catch (error) {
+      alert("Invalid email or password");
+
     }
   };
 

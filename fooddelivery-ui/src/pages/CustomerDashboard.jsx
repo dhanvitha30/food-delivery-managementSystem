@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 
 function CustomerDashboard() {
@@ -33,6 +34,16 @@ function CustomerDashboard() {
           Previous Orders
         </button>
       </div>
+
+function CustomerDashboard() {
+  return (
+    <div>
+      <h1>Customer Dashboard</h1>
+
+      <p>Browse Restaurants</p>
+      <p>Add To Cart</p>
+      <p>Place Orders</p>
+
     </div>
   );
 }
